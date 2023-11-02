@@ -292,7 +292,7 @@ fn check_word(word: &str, swears: &[&str]) -> Result<(), ()> {
 
 fn mini_app_swear_words_recognizer() {
     let word = "imi place rust";
-    let swears = ["nu imi place rust", "b*g **** in el de rust", "hmmm"];
+    let swears = ["nu imi place rust", " ****  rust", "hmmm"];
 
     match check_word(&word, &swears) {
         Ok(_) => println!("The word is not a bad word."),
