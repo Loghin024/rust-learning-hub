@@ -1,0 +1,16 @@
+ping
+ping abc
+
+count
+count a b c
+count a
+count a             b
+   count a             b   
+
+times
+times
+times abc
+
+parity_args fdfdaefdfdioufsdfsdfs dsfs dfs df 0
+
+stop
