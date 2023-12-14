@@ -1,0 +1,13 @@
+[workspace]
+
+members = [
+    "base64",
+    "encoder",
+]
+
+[package]
+name = "my_workspace"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
