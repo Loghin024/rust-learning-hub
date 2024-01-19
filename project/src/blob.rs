@@ -1,4 +1,5 @@
 //Binary Large OBject
+
 use crate::hex;
 use ::blake3::Hash;
 use serde::{Deserialize, Serialize};
@@ -20,19 +21,19 @@ impl Ord for Blob {
 
 impl PartialOrd for Blob {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.0.as_bytes().partial_cmp(other.0.as_bytes())
+        Some(self.cmp(other))
     }
 }
 
 impl From<&Vec<u8>> for Blob {
     fn from(vec: &Vec<u8>) -> Self {
-        Blob(blake3::hash(&vec))
+        Blob(blake3::hash(vec))
     }
 }
 
 impl From<&[u8]> for Blob {
     fn from(bytes: &[u8]) -> Self {
-        Blob(blake3::hash(&bytes))
+        Blob(blake3::hash(bytes))
     }
 }
 
@@ -61,9 +62,7 @@ impl<'de> Deserialize<'de> for Blob {
         let binary: hex::Hex = Deserialize::deserialize(deserializer)?;
         let v: Vec<u8> = binary.into();
         let mut bytes: [u8; 32] = [0; 32];
-        for i in 0..32 {
-            bytes[i] = v[i];
-        }
+        bytes[..32].copy_from_slice(&v[..32]);
         Ok(Blob(Hash::from(bytes)))
     }
 }
@@ -84,7 +83,7 @@ impl TryFrom<File> for Blob {
     }
 }
 
-impl<'a> TryFrom<&Path> for Blob {
+impl TryFrom<&Path> for Blob {
     type Error = std::io::Error;
 
     fn try_from(p: &Path) -> Result<Self, Self::Error> {

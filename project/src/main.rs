@@ -250,7 +250,7 @@ fn main() {
             let new_commit_blob = objects.insert_json(&directory).expect("");
             let commit = Commit {
                 directory: new_commit_blob,
-                message: message,
+                message,
                 previous: vec![last_commit_hash].into_iter().collect(),
             };
             let new_commit_hash = objects.insert_json(&commit).expect("");

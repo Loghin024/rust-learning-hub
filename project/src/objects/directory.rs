@@ -15,7 +15,7 @@ pub struct DirectoryObjects {
 impl DirectoryObjects {
     pub fn new(root: PathBuf) -> Result<Self, std::io::Error> {
         if !root.join("objects").exists() {
-            create_dir(&root.join("objects"))?;
+            create_dir(root.join("objects"))?;
         }
         Ok(Self { root })
     }
@@ -31,8 +31,8 @@ impl Objects for DirectoryObjects {
         let path_to_blob = self
             .root
             .join("objects")
-            .join(format!("{}", blob_folder_name))
-            .join(format!("{}", blob_filename));
+            .join(blob_folder_name)
+            .join(blob_filename);
         if path_to_blob.exists() {
             Ok(true)
         } else {
@@ -47,19 +47,19 @@ impl Objects for DirectoryObjects {
         let path_to_blob = self
             .root
             .join("objects")
-            .join(format!("{}", blob_folder_name))
-            .join(format!("{}", blob_filename));
+            .join(blob_folder_name)
+            .join(blob_filename);
         match std::fs::File::options().read(true).open(path_to_blob) {
             Ok(mut file) => {
                 let mut v = Vec::new();
                 file.read_to_end(&mut v)?;
-                return Ok(Some(v));
+                Ok(Some(v))
             }
             Err(err) => {
                 if err.kind() == ErrorKind::NotFound {
-                    return Ok(None);
+                    Ok(None)
                 } else {
-                    return Err(err);
+                    Err(err)
                 }
             }
         }
@@ -73,8 +73,8 @@ impl Objects for DirectoryObjects {
         let path_to_blob_folder = self
             .root
             .join("objects")
-            .join(format!("{}", blob_folder_name));
-        let path_to_blob_file = path_to_blob_folder.join(format!("{}", blob_filename));
+            .join(blob_folder_name);
+        let path_to_blob_file = path_to_blob_folder.join(blob_filename);
 
         if path_to_blob_file.exists() {
             Ok(blob)
@@ -87,7 +87,7 @@ impl Objects for DirectoryObjects {
                 .read(true)
                 .write(true)
                 .open(path_to_blob_file)?;
-            file.write(object)?;
+            file.write_all(object)?;
             Ok(blob)
         }
     }

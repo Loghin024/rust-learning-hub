@@ -42,3 +42,9 @@ impl Objects for InMemoryBlobStore {
         }
     }
 }
+
+impl Default for InMemoryBlobStore {
+    fn default() -> Self {
+        Self::new()
+    }
+}

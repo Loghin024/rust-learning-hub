@@ -40,11 +40,11 @@ impl DotLog {
         let mut file = File::options()
             .create(true)
             .write(true)
-            .open(&root.join("branch"))?;
-        file.write("master".as_bytes())?;
+            .open(root.join("branch"))?;
+        file.write_all("master".as_bytes())?;
 
         // Create the branches directory
-        create_dir(&root.join("branches"))?;
+        create_dir(root.join("branches"))?;
 
         //initial commit
         let mut objects = DirectoryObjects::new(root.clone())?;
@@ -73,15 +73,15 @@ impl DotLog {
     }
 
     pub fn get_branch(&self) -> Result<String, Error> {
-        Ok(read_to_string(&self.root.join("branch"))?)
+        Ok(read_to_string(self.root.join("branch"))?)
     }
 
     pub fn set_branch(&self, new_branch: &str) -> Result<(), Error> {
         let mut file = File::options()
             .write(true)
             .truncate(true)
-            .open(&self.root.join("branch"))?;
-        file.write(new_branch.as_bytes())?;
+            .open(self.root.join("branch"))?;
+        file.write_all(new_branch.as_bytes())?;
         Ok(())
     }
 
@@ -90,27 +90,27 @@ impl DotLog {
     }
 
     pub fn get_branch_commit_hash(&self, branch: &str) -> Result<Blob, Error> {
-        read_json(&self.root.join("branches").join(&branch))
+        read_json(&self.root.join("branches").join(branch))
     }
 
     pub fn set_branch_commit_hash(&self, branch: &str, blob: Blob) -> Result<(), Error> {
-        write_json(&blob, &self.root.join("branches").join(&branch))
+        write_json(&blob, &self.root.join("branches").join(branch))
     }
 
     pub fn branch_exists(&self, branch: &str) -> bool {
-        self.root.join("branches").join(&branch).exists()
+        self.root.join("branches").join(branch).exists()
     }
 
     pub fn create_branch(&self, new_branch: &str) -> Result<(), Error> {
-        if !self.branch_exists(&new_branch) {
+        if !self.branch_exists(new_branch) {
             let commit_hash = self.get_branch_commit_hash(&self.get_branch()?)?;
-            return write_json(&commit_hash, &self.root.join("branches").join(&new_branch));
+            return write_json(&commit_hash, &self.root.join("branches").join(new_branch));
         }
         Ok(())
     }
 
     pub fn ignores(&self) -> Result<Ignores, Error> {
-        Ok(read_json(&self.root.join("ignores"))?)
+        read_json(&self.root.join("ignores"))
     }
 }
 

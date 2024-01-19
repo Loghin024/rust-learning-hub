@@ -21,7 +21,7 @@ impl<'de> Deserialize<'de> for Hex {
         D: serde::Deserializer<'de>,
     {
         let s: String = String::deserialize(deserializer)?;
-        let b: Vec<u8> = s.into_bytes().iter().copied().collect();
+        let b: Vec<u8> = s.into_bytes().to_vec();
         Ok(Hex(b))
     }
 }
@@ -59,9 +59,9 @@ impl<'a> From<&'a [u8]> for Hex {
 impl From<Hex> for Vec<u8> {
     fn from(value: Hex) -> Self {
         fn unhex_digit(h: u8) -> u8 {
-            if h >= b'0' && h <= b'9' {
+            if h.is_ascii_digit() {
                 h - b'0'
-            } else if h >= b'a' && h <= b'f' {
+            } else if (b'a'..=b'f').contains(&h) {
                 h - b'a' + 10
             } else {
                 unreachable!("bad hex undigit: {}", h)
@@ -75,10 +75,10 @@ impl From<Hex> for Vec<u8> {
 
         let mut v = vec![0u8; n / 2];
 
-        for i in 0..(n / 2) {
+        for (i, item) in v.iter_mut().enumerate().take(n / 2) {
             let j = i * 2;
-            v[i] |= unhex_digit(value.0[j]) << 4;
-            v[i] |= unhex_digit(value.0[j + 1]);
+            *item |= unhex_digit(value.0[j]) << 4;
+            *item |= unhex_digit(value.0[j + 1]);
         }
 
         v
